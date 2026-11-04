@@ -1,28 +1,54 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------ */
+/* Design tokens: light theme                                          */
+/* ------------------------------------------------------------------ */
+
 @theme {
-  --color-obsidian: #080c14;
-  --color-electric: #00f0ff;
-  --color-royal: #7c3aed;
-  --color-ink: #f9fafb;
-  --color-steel: #9ca3af;
+  --color-canvas: #f6f8fc; /* page background */
+  --color-surface: #ffffff; /* cards, panels, dialogs */
+  --color-well: #eef2f7; /* recessed inputs, tags, previews */
+  --color-line: #e2e8f0; /* hairlines and borders */
+  --color-ink: #0b1220; /* headings and body text */
+  --color-steel: #5a6475; /* secondary text */
+  --color-electric: #0891b2; /* brand cyan: icons, accents */
+  --color-accent: #0e7490; /* brand cyan for small text and links */
+  --color-royal: #7c3aed; /* brand violet */
+
   --font-display: "Chakra Petch", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Sora Variable", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
+
+    /* Soft, layered elevation, like paper lit from above */
+    --elev-1: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -10px rgb(15 23 42 / 0.1), 0 24px 48px -28px rgb(15 23 42 / 0.12);
+    --elev-2: 0 1px 2px rgb(15 23 42 / 0.05), 0 18px 40px -14px rgb(15 23 42 / 0.16), 0 40px 70px -40px rgb(8 145 178 / 0.25);
+    --press: inset 2px 2px 5px rgb(15 23 42 / 0.07), inset -2px -2px 5px rgb(255 255 255 / 0.9);
+    --glow-edge: rgb(8 145 178 / 0.35);
   }
 
   html {
-    background: var(--color-obsidian);
+    background: var(--color-canvas);
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }
 
+  /* Freeze the page behind an open case-study dialog */
+  html:has(dialog[open]) {
+    overflow: hidden;
+  }
+
   body {
-    background: var(--color-obsidian);
+    position: relative;
+    min-height: 100svh;
+    background: transparent; /* lets the fixed colour mesh below show through */
     color: var(--color-ink);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -30,13 +56,35 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* Soft brand-colour wash fixed to the viewport: cyan top-left, violet bottom-right */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 50% at 0% 0%, rgb(6 182 212 / 0.1), transparent 70%),
+      radial-gradient(ellipse 65% 55% at 100% 100%, rgb(124 58 237 / 0.1), transparent 70%);
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
   section[id] {
     scroll-margin-top: 4.5rem;
   }
 
   ::selection {
-    background: rgb(0 240 255 / 0.3);
-    color: #fff;
+    background: rgb(8 145 178 / 0.18);
+    color: var(--color-ink);
   }
 
   :focus-visible {
@@ -45,32 +93,156 @@
   }
 }
 
+/* ------------------------------------------------------------------ */
+/* Components                                                          */
+/* ------------------------------------------------------------------ */
+
 @layer components {
-  /* Pneumatic & Glass Card Surfaces */
+  /* Raised surfaces ------------------------------------------------- */
   .panel,
   .glass {
-    background: #0d1322;
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    box-shadow: 
-      6px 6px 18px #04060a,
-      -6px -6px 18px #12192a;
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
+    border: 1px solid var(--color-line);
     border-radius: 20px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    box-shadow: var(--elev-1);
+    transition:
+      box-shadow 0.35s ease,
+      border-color 0.35s ease,
+      transform 0.35s ease;
   }
 
-  .panel:hover,
-  .glass:hover {
-    border-color: rgba(0, 240, 255, 0.35);
-    box-shadow: 
-      10px 10px 24px #030407,
-      -10px -10px 24px #151e33,
-      0 0 20px rgba(0, 240, 255, 0.12);
-    transform: translateY(-3px);
+  .panel {
+    background: var(--color-surface);
   }
 
-  /* Buttons */
+  .glass {
+    background: rgb(255 255 255 / 0.72);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    backdrop-filter: blur(16px) saturate(160%);
+  }
+
+  @media (hover: hover) {
+    .panel:not(.is-static):hover,
+    .glass:not(.is-static):hover {
+      border-color: var(--glow-edge);
+      box-shadow: var(--elev-2);
+    }
+  }
+
+  /* Recessed surfaces ----------------------------------------------- */
+  .well {
+    background: var(--color-well);
+    border: 1px solid rgb(15 23 42 / 0.04);
+    box-shadow: var(--press);
+  }
+
+  /* Technology tags. As buttons they filter the project list. */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.38rem 0.8rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--color-steel);
+    background: var(--color-well);
+    border: 1px solid transparent;
+    box-shadow: var(--press);
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  button.tag {
+    cursor: pointer;
+  }
+
+  @media (hover: hover) {
+    button.tag:hover {
+      color: var(--color-ink);
+      border-color: var(--glow-edge);
+    }
+  }
+
+  .tag[aria-pressed="true"] {
+    color: var(--color-accent);
+    background: rgb(8 145 178 / 0.1);
+    border-color: rgb(8 145 178 / 0.45);
+  }
+
+  /* Category, concept and flagship badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border-radius: 999px;
+    padding: 0.32rem 0.75rem;
+    font-size: 0.76rem;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--color-accent);
+    background: rgb(8 145 178 / 0.08);
+    border: 1px solid rgb(8 145 178 / 0.2);
+  }
+
+  .badge-flagship {
+    color: #fff;
+    background: linear-gradient(135deg, var(--color-electric), var(--color-royal));
+    border-color: transparent;
+    font-weight: 600;
+  }
+
+  .badge-concept {
+    color: var(--color-steel);
+    background: var(--color-well);
+    border-color: var(--color-line);
+  }
+
+  /* Filter chips (project categories) ------------------------------- */
+  .chip {
+    position: relative; /* keeps the visually hidden radio inside the chip */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    padding: 0.55rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-steel);
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .chip:hover {
+    color: var(--color-ink);
+    border-color: rgb(15 23 42 / 0.2);
+  }
+
+  .chip[aria-pressed="true"],
+  .chip:has(input:checked) {
+    color: #fff;
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    box-shadow: 0 6px 16px -8px rgb(15 23 42 / 0.6);
+  }
+
+  .chip:has(input:focus-visible) {
+    outline: 2px solid var(--color-electric);
+    outline-offset: 3px;
+  }
+
+  .chip-count {
+    font-size: 0.75rem;
+    opacity: 0.6;
+  }
+
+  /* Buttons --------------------------------------------------------- */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -82,7 +254,13 @@
     font-weight: 600;
     line-height: 1;
     white-space: nowrap;
-    transition: transform 0.2s ease, box-shadow 0.25s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.25s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      filter 0.2s ease;
   }
 
   .btn:active {
@@ -91,30 +269,29 @@
 
   .btn-primary {
     background: linear-gradient(135deg, var(--color-electric) 0%, var(--color-royal) 100%);
-    color: #ffffff;
-    box-shadow: 0 4px 20px rgba(0, 240, 255, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    box-shadow: 0 10px 24px -10px rgb(8 145 178 / 0.65), 0 2px 6px -2px rgb(124 58 237 / 0.35);
   }
 
   .btn-primary:hover {
-    background: linear-gradient(135deg, #33f3ff 0%, #8b5cf6 100%);
-    box-shadow: 0 6px 28px rgba(0, 240, 255, 0.6);
+    filter: brightness(1.06);
+    box-shadow: 0 14px 30px -10px rgb(8 145 178 / 0.75), 0 4px 10px -4px rgb(124 58 237 / 0.45);
     transform: translateY(-2px);
   }
 
   .btn-ghost {
-    background: #0d1322;
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgb(255 255 255 / 0.75);
+    border: 1px solid var(--color-line);
     color: var(--color-ink);
-    box-shadow: inset 2px 2px 5px #05070d, inset -2px -2px 5px #151f37;
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
   }
 
   .btn-ghost:hover {
-    border-color: rgba(0, 240, 255, 0.6);
-    color: #fff;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+    border-color: var(--glow-edge);
+    box-shadow: 0 6px 18px -8px rgb(8 145 178 / 0.4);
   }
 
   .btn-sm {
@@ -122,65 +299,162 @@
     font-size: 0.875rem;
   }
 
+  .btn-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+  }
+
   .btn[disabled] {
     opacity: 0.6;
     cursor: progress;
   }
 
-  /* Form controls (Pneumatic Inset Style) */
+  /* Text link with an arrow that steps forward on hover */
+  .link-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-accent);
+    border-radius: 6px;
+    transition: color 0.2s ease;
+  }
+
+  .link-arrow svg {
+    transition: transform 0.25s ease;
+  }
+
+  .link-arrow:hover {
+    color: var(--color-royal);
+  }
+
+  .link-arrow:hover svg {
+    transform: translateX(4px);
+  }
+
+  /* Form controls --------------------------------------------------- */
   .field {
     width: 100%;
     border-radius: 14px;
-    background: #080c15;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: inset 4px 4px 10px #030509, inset -4px -4px 10px #0d1321;
+    background: var(--color-well);
+    border: 1px solid transparent;
+    box-shadow: var(--press);
     padding: 0.85rem 1rem;
     color: var(--color-ink);
     font-size: 1rem;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease;
   }
 
   .field::placeholder {
-    color: rgb(156 163 175 / 0.7);
+    color: rgb(90 100 117 / 0.75);
   }
 
   .field:hover {
-    border-color: rgba(255, 255, 255, 0.25);
+    border-color: rgb(15 23 42 / 0.12);
   }
 
   .field:focus {
     outline: none;
+    background: var(--color-surface);
     border-color: var(--color-electric);
-    box-shadow: inset 2px 2px 6px #030509, 0 0 12px rgba(0, 240, 255, 0.35);
+    box-shadow: 0 0 0 4px rgb(8 145 178 / 0.14);
   }
 
   .field[aria-invalid="true"] {
-    border-color: #f87171;
+    border-color: #dc2626;
   }
 
   select.field {
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235A6475' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.9rem center;
     background-size: 1.1rem;
     padding-right: 2.6rem;
   }
 
-  select.field option {
-    background: #0d1322;
-    color: var(--color-ink);
+  /* Project previews: illustrated device mockups in 3D -------------- */
+  .stage {
+    position: relative;
+    overflow: clip; /* clip, not hidden: a hidden box can still be scrolled by focus */
+    container-type: inline-size;
+    border-radius: 18px;
+    background:
+      radial-gradient(120% 90% at 0% 0%, rgb(6 182 212 / 0.16), transparent 55%),
+      radial-gradient(110% 90% at 100% 100%, rgb(124 58 237 / 0.16), transparent 55%),
+      linear-gradient(180deg, #f8fafd, #eef2f8);
+    perspective: 1400px;
   }
 
-  /* Skip link */
+  /* Everything inside a preview is sized in em, so the whole device scales with the card */
+  .stage-scale {
+    font-size: 1.65cqw;
+  }
+
+  .device {
+    transform: rotateY(-13deg) rotateX(7deg) rotateZ(0.5deg);
+    transform-style: preserve-3d;
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  .device-flip {
+    transform: rotateY(13deg) rotateX(7deg) rotateZ(-0.5deg);
+  }
+
+  .group:hover .device,
+  .group:focus-within .device,
+  .device-flat {
+    transform: rotateY(0deg) rotateX(0deg) translateY(-0.4em);
+  }
+
+  /* Case-study dialog ----------------------------------------------- */
+  .case-dialog {
+    width: min(52rem, calc(100% - 1.5rem));
+    max-width: none;
+    max-height: calc(100svh - 1.5rem);
+    margin: auto;
+    padding: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: 24px;
+    box-shadow: 0 40px 90px -30px rgb(15 23 42 / 0.45);
+  }
+
+  .case-dialog::backdrop {
+    background: rgb(15 23 42 / 0.42);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+
+  .case-dialog[open] {
+    animation: dialog-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+    }
+  }
+
+  /* Skip link ------------------------------------------------------- */
   .skip-link {
     position: absolute;
     left: 1rem;
     top: -4rem;
     z-index: 100;
     border-radius: 999px;
-    background: var(--color-electric);
-    color: #04131a;
+    background: var(--color-ink);
+    color: #fff;
     padding: 0.6rem 1rem;
     font-weight: 600;
   }
@@ -189,10 +463,15 @@
     top: 1rem;
   }
 
-  /* Hero emblem float */
+  /* Hero emblem float ----------------------------------------------- */
   @keyframes emblem-float {
-    0%, 100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
-    50% { transform: translate3d(0, -14px, 0) rotate(2deg); }
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) rotate(-2deg);
+    }
+    50% {
+      transform: translate3d(0, -14px, 0) rotate(2deg);
+    }
   }
 
   .emblem-float {
@@ -203,10 +482,17 @@
     html {
       scroll-behavior: auto;
     }
-    .emblem-float {
+    .emblem-float,
+    .case-dialog[open] {
       animation: none;
     }
-    .btn {
+    .btn,
+    .panel,
+    .glass,
+    .tag,
+    .chip,
+    .device,
+    .link-arrow svg {
       transition: none;
     }
   }

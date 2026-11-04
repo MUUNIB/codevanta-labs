@@ -50,7 +50,7 @@ export default function Hero() {
       id="top"
       ref={sectionRef}
       aria-labelledby="hero-title"
-      className="relative isolate flex min-h-[100svh] flex-col overflow-hidden"
+      className="relative isolate flex min-h-[100svh] flex-col overflow-clip"
     >
       <div className={`absolute inset-0 transition-opacity duration-1000 ${ready ? 'opacity-0' : 'opacity-100'}`}>
         <FallbackBackground animate={!reduce && !ready && inView} showEmblem={!ready} />
@@ -67,7 +67,7 @@ export default function Hero() {
       {/* Keeps the copy readable over the scene */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,var(--color-obsidian)_8%,rgb(11_15_23/0.55)_45%,transparent_75%)] md:bg-[linear-gradient(to_right,var(--color-obsidian)_0%,rgb(11_15_23/0.7)_38%,transparent_62%),linear-gradient(to_top,var(--color-obsidian),transparent_30%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,var(--color-canvas)_10%,rgb(246_248_252/0.7)_45%,transparent_75%)] md:bg-[linear-gradient(to_right,var(--color-canvas)_0%,rgb(246_248_252/0.8)_36%,transparent_60%),linear-gradient(to_top,var(--color-canvas),transparent_28%)]"
       />
 
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-end px-5 pb-16 pt-28 sm:px-8 md:justify-center md:pb-24">
@@ -79,7 +79,7 @@ export default function Hero() {
             <span key={line} className="block overflow-hidden pb-[0.06em]">
               <motion.span
                 className="block"
-               initial={false}
+                initial={reduce ? false : { y: '105%' }}
                 animate={{ y: 0 }}
                 transition={{ duration: 0.9, delay: 0.15 + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
               >
@@ -90,7 +90,7 @@ export default function Hero() {
         </h1>
 
         <motion.div
-         initial={false}
+          initial={reduce ? false : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
@@ -100,8 +100,8 @@ export default function Hero() {
           </p>
 
           <div className="mt-9 flex flex-wrap items-center gap-3">
-            <a href="#services" className="btn btn-ghost">
-              Explore services
+            <a href="#projects" className="btn btn-ghost">
+              See our work
             </a>
             <a href="#contact" className="btn btn-primary">
               Start a project

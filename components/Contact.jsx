@@ -4,10 +4,10 @@ import { site } from '@/lib/site';
 
 export default function Contact() {
   return (
-    <section id="contact" aria-labelledby="contact-title" className="relative overflow-hidden border-t border-white/[0.06] py-28 lg:py-36">
+    <section id="contact" aria-labelledby="contact-title" className="relative overflow-clip border-t border-line py-28 lg:py-36">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-40 top-10 h-[520px] w-[520px] rounded-full bg-[radial-gradient(closest-side,rgb(124_58_237/0.22),transparent)]"
+        className="pointer-events-none absolute -right-40 top-10 h-[520px] w-[520px] rounded-full bg-[radial-gradient(closest-side,rgb(124_58_237/0.12),transparent)]"
       />
       <div className="relative mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-5">

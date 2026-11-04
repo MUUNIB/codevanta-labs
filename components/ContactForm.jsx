@@ -3,13 +3,13 @@
 import { useRef, useState } from 'react';
 import Icon from './Icon';
 import { site } from '@/lib/site';
-import { BUDGET_OPTIONS, EMPTY_INQUIRY, SERVICE_OPTIONS, validateInquiry } from '@/lib/contact';
+import { BUDGET_CHOICES, CURRENCIES, CUSTOM_BUDGET, EMPTY_INQUIRY, SERVICE_OPTIONS, budgetLabel, validateInquiry } from '@/lib/contact';
 
-const ORDER = ['name', 'email', 'service', 'budget', 'details'];
+const ORDER = ['name', 'email', 'service', 'budget', 'budgetAmount', 'details'];
 
 function FieldError({ k, errors }) {
   return errors[k] ? (
-    <p id={`f-${k}-error`} className="mt-2 text-sm text-red-300">
+    <p id={`f-${k}-error`} className="mt-2 text-sm text-red-600">
       {errors[k]}
     </p>
   ) : null;
@@ -17,6 +17,7 @@ function FieldError({ k, errors }) {
 
 export default function ContactForm() {
   const formRef = useRef(null);
+  const amountRef = useRef(null);
   const [values, setValues] = useState(EMPTY_INQUIRY);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState('idle'); // idle · sending · sent · error
@@ -27,6 +28,11 @@ export default function ContactForm() {
     const value = e.target.value;
     setValues((v) => ({ ...v, [key]: value }));
     if (errors[key]) setErrors((err) => ({ ...err, [key]: undefined }));
+    if (key === 'budget') {
+      setErrors((err) => ({ ...err, budget: undefined, budgetAmount: undefined }));
+      // Move straight to the amount box when the visitor chooses to type their own budget.
+      if (value === CUSTOM_BUDGET) requestAnimationFrame(() => amountRef.current?.focus());
+    }
   };
 
   async function onSubmit(e) {
@@ -35,7 +41,9 @@ export default function ContactForm() {
     setErrors(found);
     const first = ORDER.find((k) => found[k]);
     if (first) {
-      formRef.current?.elements.namedItem(first)?.focus();
+      const el = formRef.current?.elements.namedItem(first);
+      // Radio groups come back as a list: focus the first option.
+      (el && 'focus' in el ? el : el?.[0])?.focus();
       return;
     }
 
@@ -60,7 +68,7 @@ export default function ContactForm() {
           name: values.name,
           email: values.email,
           service: values.service,
-          budget: values.budget,
+          budget: budgetLabel(values),
           message: values.details,
         }),
       });
@@ -82,13 +90,13 @@ export default function ContactForm() {
 
   if (status === 'sent') {
     return (
-      <div role="status" className="panel flex h-full flex-col items-start justify-center rounded-[28px] p-8 sm:p-10">
+      <div role="status" className="panel is-static flex h-full flex-col items-start justify-center rounded-[28px] p-8 sm:p-10">
         <span className="grid h-12 w-12 place-items-center rounded-full bg-electric/10 text-electric">
           <Icon name="check" className="h-6 w-6" />
         </span>
         <h3 className="mt-6 font-display text-3xl font-semibold text-ink">Inquiry sent</h3>
         <p className="mt-3 max-w-md leading-relaxed text-steel">
-          Thanks! Your inquiry has been delivered straight to our inbox. We will reply to <span className="text-electric font-medium">{sentTo}</span> shortly.
+          Thanks! Your inquiry has been delivered straight to our inbox. We will reply to <span className="font-medium text-accent">{sentTo}</span> shortly.
         </p>
         <button type="button" className="btn btn-ghost mt-8" onClick={() => setStatus('idle')}>
           Send another inquiry
@@ -107,9 +115,11 @@ export default function ContactForm() {
     className: 'field',
   });
 
+  const custom = values.budget === CUSTOM_BUDGET;
+
   return (
-    <form ref={formRef} onSubmit={onSubmit} noValidate className="panel relative rounded-[28px] p-6 sm:p-9" aria-describedby="form-note">
-      <div className="grid gap-5 sm:grid-cols-2">
+    <form ref={formRef} onSubmit={onSubmit} noValidate className="panel is-static relative rounded-[28px] p-6 sm:p-9" aria-describedby="form-note">
+      <div className="grid gap-6 sm:grid-cols-2">
         <div>
           <label htmlFor="f-name" className="mb-2 block text-sm font-medium text-ink">
             Full name
@@ -124,7 +134,8 @@ export default function ContactForm() {
           <input {...fieldProps('email')} type="email" autoComplete="email" inputMode="email" placeholder="you@company.com" />
           <FieldError k="email" errors={errors} />
         </div>
-        <div>
+
+        <div className="sm:col-span-2">
           <label htmlFor="f-service" className="mb-2 block text-sm font-medium text-ink">
             Service needed
           </label>
@@ -140,22 +151,62 @@ export default function ContactForm() {
           </select>
           <FieldError k="service" errors={errors} />
         </div>
-        <div>
-          <label htmlFor="f-budget" className="mb-2 block text-sm font-medium text-ink">
-            Budget range
-          </label>
-          <select {...fieldProps('budget')}>
-            <option value="" disabled>
-              Choose a range
-            </option>
-            {BUDGET_OPTIONS.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
+
+        <fieldset className="sm:col-span-2" aria-describedby={errors.budget ? 'f-budget-error' : undefined}>
+          <legend className="mb-1 block text-sm font-medium text-ink">Budget</legend>
+          <p className="mb-3 text-sm text-steel">Pick a range, or enter your own figure in any currency.</p>
+          <div className="flex flex-wrap gap-2">
+            {BUDGET_CHOICES.map((o) => (
+              <label key={o} className="chip cursor-pointer">
+                <input type="radio" name="budget" value={o} checked={values.budget === o} onChange={update('budget')} className="sr-only" />
+                {o === CUSTOM_BUDGET ? (
+                  <>
+                    <Icon name="edit" className="h-4 w-4" />
+                    {o}
+                  </>
+                ) : (
+                  o
+                )}
+              </label>
             ))}
-          </select>
+          </div>
           <FieldError k="budget" errors={errors} />
-        </div>
+
+          {custom ? (
+            <div className="well mt-4 rounded-2xl p-4 sm:p-5">
+              <div className="grid gap-3 sm:grid-cols-[9rem_1fr]">
+                <div>
+                  <label htmlFor="f-budgetCurrency" className="mb-2 block text-sm font-medium text-ink">
+                    Currency
+                  </label>
+                  <select {...fieldProps('budgetCurrency')} className="field bg-surface">
+                    {CURRENCIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="f-budgetAmount" className="mb-2 block text-sm font-medium text-ink">
+                    Your budget for the whole project
+                  </label>
+                  <input
+                    {...fieldProps('budgetAmount')}
+                    ref={amountRef}
+                    className="field bg-surface"
+                    type="text"
+                    inputMode="decimal"
+                    autoComplete="off"
+                    placeholder={values.budgetCurrency === 'PKR' ? 'e.g. 250,000' : 'e.g. 2,500'}
+                  />
+                </div>
+              </div>
+              <FieldError k="budgetAmount" errors={errors} />
+            </div>
+          ) : null}
+        </fieldset>
+
         <div className="sm:col-span-2">
           <label htmlFor="f-details" className="mb-2 block text-sm font-medium text-ink">
             Project details
@@ -186,7 +237,7 @@ export default function ContactForm() {
       </div>
 
       {status === 'error' && (
-        <p role="alert" className="mt-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm leading-relaxed text-red-300">
+        <p role="alert" className="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-relaxed text-red-700">
           {errorMessage}
         </p>
       )}

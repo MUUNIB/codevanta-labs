@@ -28,6 +28,8 @@ components/
   Canvas3D.jsx          React Three Fiber scene: faceted crystal emblem, particle floor, dust, camera parallax
   FallbackBackground.jsx 2D canvas particle grid + floating logo (no WebGL, reduced motion, or while 3D loads)
   Services.jsx          Five service cards in a bento grid
+  Projects.jsx          Projects: category filter, tech filter, "Show all", case-study dialog
+  ProjectPreview.jsx    Illustrated device mockups (browser, phone, desktop) for each project
   TiltCard.jsx          Cursor-following 3D tilt with a soft light
   TechStack.jsx         Draggable 3D ring of technologies
   Process.jsx           Four-step workflow with a scroll-linked progress line
@@ -36,14 +38,28 @@ components/
   Footer.jsx, Logo.jsx, Icon.jsx, SectionHeading.jsx
 lib/
   site.js               Email, phone, WhatsApp, social links, navigation
-  content.js            All service, tech stack and process copy
-  contact.js            Form options, validation and mailto builder (shared by browser and server)
+  content.js            All service, project, tech stack and process copy
+  contact.js            Form options (incl. custom budget), validation and mailto builder
   webgl.js              WebGL support check
 public/
   logo-emblem.webp      Logo emblem
 ```
 
 Most text changes happen in `lib/content.js` and `lib/site.js`.
+
+## Projects
+
+Projects live in `lib/content.js` (`projects`). Each one has a `kind`:
+
+- `product` or `client`: work you have shipped. `client` adds a "Client project" badge and the `client` name in the case study.
+- `concept`: a sample build that shows what a practice can deliver. It gets a "Concept" badge and a note in the case study. Switch it to `client` or `product` once you have shipped something like it.
+
+Every card shows an illustrated interface drawn in `components/ProjectPreview.jsx`. To use real material instead:
+
+1. Put files in `public/projects/` (e.g. `agriguard.png`, `agriguard.mp4`).
+2. On the project, set `image: '/projects/agriguard.png'` to replace the illustration, and/or `video: '/projects/agriguard.mp4'` to play a demo in the case study.
+
+Keep videos short and compressed (under ~10 MB, H.264 MP4) so the page stays fast.
 
 ## Contact form
 
@@ -71,7 +87,8 @@ CONTACT_TO_EMAIL=thecodevantalabs@gmail.com
 
 ## Before launch
 
-- Confirm the Facebook and LinkedIn URLs in `lib/site.js`. Instagram already points to @codevantalabs.
+- Confirm the Facebook URL in `lib/site.js`. Instagram already points to @codevantalabs.
+- Replace the Propex AI `liveUrl` in `lib/content.js`: it currently points at this site.
 - Replace `public/logo-emblem.webp` with a high-resolution transparent PNG or WebP of the logo. The current file was cut from the promo reel.
 - Add an Open Graph image (`app/opengraph-image.png`, 1200x630) for link previews.
 

@@ -47,6 +47,9 @@ const PATHS = {
   left: <path d="M15 5l-7 7 7 7" />,
   right: <path d="M9 5l7 7-7 7" />,
   check: <path d="M5 12.5l4.5 4.5L19 7.5" />,
+  edit: <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-4-4L4 16v4zM13.5 6.5l4 4" />,
+  arrowRight: <path d="M4 12h15M13 6l6 6-6 6" />,
+  external: <path d="M14 4h6v6M20 4l-9 9M18 14v4.5A1.5 1.5 0 0 1 16.5 20h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10" />,
 };
 
 export default function Icon({ name, className = 'h-5 w-5', strokeWidth = 1.8 }) {

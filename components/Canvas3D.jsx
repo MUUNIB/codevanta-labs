@@ -168,19 +168,19 @@ function Crystal() {
         roughness: 0.14,
         clearcoat: 1,
         clearcoatRoughness: 0.1,
-        emissive: new THREE.Color('#24105e'),
-        emissiveIntensity: 0.55,
-        envMapIntensity: 1.2,
+        emissive: new THREE.Color('#1e1050'),
+        emissiveIntensity: 0.18,
+        envMapIntensity: 1.5,
       }),
     []
   );
   const edgeMaterial = useMemo(
     () =>
       new THREE.LineBasicMaterial({
-        color: '#8ff9ff',
+        color: '#ffffff',
         transparent: true,
-        opacity: 0.4,
-        blending: THREE.AdditiveBlending,
+        opacity: 0.75,
+        blending: THREE.NormalBlending,
         depthWrite: false,
         toneMapped: false,
       }),
@@ -245,10 +245,10 @@ function Crystal() {
   return (
     <group ref={root}>
       <sprite position={[0, 0.2, -1.2]} scale={[7.5, 7.5, 1]}>
-        <spriteMaterial map={glow} color="#4b2bb8" transparent opacity={0.55} blending={THREE.AdditiveBlending} depthWrite={false} />
+        <spriteMaterial map={glow} color="#a78bfa" transparent opacity={0.32} depthWrite={false} />
       </sprite>
       <sprite position={[0.3, 0.6, -0.8]} scale={[4, 4, 1]}>
-        <spriteMaterial map={glow} color="#00c8e0" transparent opacity={0.35} blending={THREE.AdditiveBlending} depthWrite={false} />
+        <spriteMaterial map={glow} color="#67e8f9" transparent opacity={0.3} depthWrite={false} />
       </sprite>
       <group position={[0.04, -0.35, 0]}>
         {PIECES.map((piece, i) => (
@@ -296,7 +296,7 @@ const floorFragment = /* glsl */ `
     float d = length(gl_PointCoord - 0.5);
     float a = smoothstep(0.5, 0.05, d) * vAlpha;
     if (a < 0.01) discard;
-    gl_FragColor = vec4(mix(uA, uB, vMix), a);
+    gl_FragColor = vec4(mix(uA, uB, vMix), a * 0.7);
     #include <colorspace_fragment>
   }
 `;
@@ -324,14 +324,14 @@ function Floor({ cols, rows }) {
         uniforms: {
           uTime: { value: 0 },
           uSize: { value: 50 },
-          uA: { value: CYAN.clone() },
-          uB: { value: VIOLET.clone() },
+          uA: { value: new THREE.Color('#0891b2') },
+          uB: { value: new THREE.Color('#7c3aed') },
         },
         vertexShader: floorVertex,
         fragmentShader: floorFragment,
         transparent: true,
         depthWrite: false,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.NormalBlending,
       }),
     []
   );
@@ -376,10 +376,10 @@ function Dust({ count }) {
         size={0.08}
         sizeAttenuation
         transparent
-        opacity={0.75}
-        color="#a8f1ff"
+        opacity={0.45}
+        color="#0891b2"
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        blending={THREE.NormalBlending}
       />
     </points>
   );
@@ -442,14 +442,15 @@ export default function Canvas3D({ active = true, onReady }) {
       }}
     >
       <PerformanceMonitor onDecline={() => setDpr(1)} />
-      <fog attach="fog" args={['#0B0F17', 10, 26]} />
-      <ambientLight intensity={0.25} />
+      <fog attach="fog" args={['#f6f8fc', 10, 26]} />
+      <ambientLight intensity={0.55} />
       <pointLight position={[4, 3, 5]} intensity={45} color="#00F0FF" />
       <pointLight position={[-4, -2, 4]} intensity={40} color="#7C3AED" />
       <Environment resolution={128} frames={1}>
         <Lightformer form="rect" intensity={3} color="#00F0FF" position={[3, 2, 4]} scale={[4, 2, 1]} />
         <Lightformer form="rect" intensity={2.5} color="#7C3AED" position={[-4, -1, 3]} scale={[4, 3, 1]} />
         <Lightformer form="ring" intensity={2} color="#ffffff" position={[0, 4, -4]} scale={3} />
+        <Lightformer form="rect" intensity={1.6} color="#ffffff" position={[0, 0, 6]} scale={[8, 6, 1]} />
       </Environment>
       <Floor cols={lite ? 44 : 72} rows={lite ? 40 : 64} />
       <Dust count={lite ? 350 : 900} />

@@ -17,7 +17,7 @@ function Badge({ item, index, rotation, radius }) {
   return (
     <motion.li
       style={{ transform, opacity, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
-      className="absolute left-1/2 top-1/2 -ml-[70px] -mt-[52px] flex h-[104px] w-[140px] flex-col justify-center rounded-[20px] border border-white/10 bg-[linear-gradient(150deg,rgb(255_255_255/0.07),rgb(124_58_237/0.08))] px-4 shadow-[0_0_40px_-12px_rgb(0_240_255/0.45)] md:-ml-[95px] md:-mt-[64px] md:h-[128px] md:w-[190px] md:px-5"
+      className="absolute left-1/2 top-1/2 -ml-[70px] -mt-[52px] flex h-[104px] w-[140px] flex-col justify-center rounded-[20px] border border-line bg-surface px-4 shadow-[0_18px_40px_-18px_rgb(15_23_42/0.25),0_2px_6px_-2px_rgb(15_23_42/0.08)] md:-ml-[95px] md:-mt-[64px] md:h-[128px] md:w-[190px] md:px-5"
     >
       <span className="font-display text-xl font-semibold text-ink md:text-[1.8rem]">{item.name}</span>
       <span className="mt-1 text-xs leading-snug text-steel md:text-[0.8rem]">{item.use}</span>
@@ -65,10 +65,10 @@ export default function TechStack() {
   };
 
   return (
-    <section id="stack" aria-labelledby="stack-title" className="relative overflow-hidden border-t border-white/[0.06] py-28 lg:py-36">
+    <section id="stack" aria-labelledby="stack-title" className="relative overflow-clip border-t border-line py-28 lg:py-36">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgb(255_255_255/0.035)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.035)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgb(15_23_42/0.05)_1px,transparent_1px),linear-gradient(90deg,rgb(15_23_42/0.05)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]"
       />
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHeading id="stack-title" title="The tools we ship with">
@@ -88,7 +88,7 @@ export default function TechStack() {
             endDrag();
           }}
         >
-          <div aria-hidden="true" className="absolute left-1/2 top-[62%] h-24 w-[70%] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(closest-side,rgb(0_240_255/0.18),transparent)] blur-xl" />
+          <div aria-hidden="true" className="absolute left-1/2 top-[62%] h-24 w-[70%] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(closest-side,rgb(8_145_178/0.16),transparent)] blur-xl" />
           <motion.ul
             aria-label="Technologies we use"
             className="absolute inset-0"

@@ -24,7 +24,7 @@ export default function Services() {
           {services.map((s, i) => (
             <TiltCard key={s.id} className={SPANS[i] || 'lg:col-span-2'} aria-labelledby={`svc-${s.id}`}>
               <div className="flex h-full flex-col p-7 sm:p-8">
-                <span className="grid h-12 w-12 place-items-center rounded-2xl border border-electric/30 bg-electric/[0.07] text-electric shadow-[0_0_24px_-6px_rgb(0_240_255/0.6)]">
+                <span className="grid h-12 w-12 place-items-center rounded-2xl border border-electric/20 bg-linear-to-br from-cyan-50 to-violet-50 text-electric shadow-[0_8px_20px_-10px_rgb(8_145_178/0.5)]">
                   <Icon name={s.icon} className="h-6 w-6" />
                 </span>
 
@@ -33,7 +33,7 @@ export default function Services() {
                 </h3>
                 <p className="mt-4 max-w-[46ch] leading-relaxed text-steel">{s.summary}</p>
 
-                <ul className="mt-6 space-y-2.5 text-[0.95rem] text-ink/90">
+                <ul className="mt-6 space-y-2.5 text-[0.95rem] text-ink/85">
                   {s.deliverables.map((d) => (
                     <li key={d} className="flex gap-3">
                       <span aria-hidden="true" className="mt-[0.55em] h-1.5 w-1.5 flex-none rotate-45 bg-electric" />
@@ -44,7 +44,7 @@ export default function Services() {
 
                 <ul className="mt-auto flex flex-wrap gap-2 pt-8" aria-label="Technologies">
                   {s.stack.map((t) => (
-                    <li key={t} className="rounded-full border border-white/10 px-3 py-1 text-xs text-steel">
+                    <li key={t} className="tag">
                       {t}
                     </li>
                   ))}

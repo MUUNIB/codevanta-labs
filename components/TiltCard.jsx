@@ -17,7 +17,7 @@ export default function TiltCard({ children, className = '', as = 'article', ...
   const rotateX = useTransform(sy, [0, 1], [6, -6]);
   const lx = useTransform(sx, (v) => `${v * 100}%`);
   const ly = useTransform(sy, (v) => `${v * 100}%`);
-  const light = useMotionTemplate`radial-gradient(520px circle at ${lx} ${ly}, rgb(0 240 255 / 0.13), transparent 42%)`;
+  const light = useMotionTemplate`radial-gradient(520px circle at ${lx} ${ly}, rgb(8 145 178 / 0.08), transparent 42%)`;
 
   useEffect(() => {
     setMounted(true);
@@ -52,7 +52,7 @@ export default function TiltCard({ children, className = '', as = 'article', ...
       ref={ref}
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
-      className={`group panel relative h-full rounded-[26px] transition-[border-color] duration-300 ${className}`}
+      className={`group panel relative h-full rounded-[26px] transition-[border-color,box-shadow] duration-300 ${className}`}
       style={{
         transformStyle: 'preserve-3d',
         rotateX: reduce ? 0 : rotateX,

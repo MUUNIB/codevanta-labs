@@ -32,6 +32,8 @@ export async function POST(request) {
     email: String(body?.email ?? ''),
     service: String(body?.service ?? ''),
     budget: String(body?.budget ?? ''),
+    budgetCurrency: String(body?.budgetCurrency ?? 'USD'),
+    budgetAmount: String(body?.budgetAmount ?? ''),
     details: String(body?.details ?? ''),
   };
 

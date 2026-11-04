@@ -4,7 +4,7 @@ import { site } from '@/lib/site';
 export default function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="border-t border-white/[0.07]">
+    <footer className="border-t border-line bg-white/60">
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-14 sm:px-8 md:grid-cols-12">
         <div className="md:col-span-5">
           <Logo size={36} />
@@ -16,7 +16,7 @@ export default function Footer() {
           <ul className="mt-4 space-y-3">
             {site.nav.map((item) => (
               <li key={item.href}>
-                <a href={item.href} className="text-ink/90 transition-colors hover:text-electric">
+                <a href={item.href} className="text-ink/85 transition-colors hover:text-accent">
                   {item.label}
                 </a>
               </li>
@@ -29,7 +29,7 @@ export default function Footer() {
           <ul className="mt-4 space-y-3">
             {site.socials.map((s) => (
               <li key={s.label}>
-                <a href={s.href} target="_blank" rel="noopener noreferrer" className="text-ink/90 transition-colors hover:text-electric">
+                <a href={s.href} target="_blank" rel="noopener noreferrer" className="text-ink/85 transition-colors hover:text-accent">
                   {s.label}
                 </a>
               </li>
@@ -37,7 +37,7 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <div className="border-t border-white/[0.05]">
+      <div className="border-t border-line">
         <p className="mx-auto max-w-7xl px-5 py-6 text-xs text-steel sm:px-8">
           © {year} {site.name}. All rights reserved.
         </p>
