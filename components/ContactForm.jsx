@@ -3,9 +3,9 @@
 import { useRef, useState } from 'react';
 import Icon from './Icon';
 import { site } from '@/lib/site';
-import { BUDGET_CHOICES, CURRENCIES, CUSTOM_BUDGET, EMPTY_INQUIRY, SERVICE_OPTIONS, budgetLabel, validateInquiry } from '@/lib/contact';
+import { EMPTY_INQUIRY, SERVICE_OPTIONS, validateInquiry } from '@/lib/contact';
 
-const ORDER = ['name', 'email', 'service', 'budget', 'budgetAmount', 'details'];
+const ORDER = ['name', 'email', 'service', 'details'];
 
 function FieldError({ k, errors }) {
   return errors[k] ? (
@@ -17,7 +17,6 @@ function FieldError({ k, errors }) {
 
 export default function ContactForm() {
   const formRef = useRef(null);
-  const amountRef = useRef(null);
   const [values, setValues] = useState(EMPTY_INQUIRY);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState('idle'); // idle · sending · sent · error
@@ -28,21 +27,18 @@ export default function ContactForm() {
     const value = e.target.value;
     setValues((v) => ({ ...v, [key]: value }));
     if (errors[key]) setErrors((err) => ({ ...err, [key]: undefined }));
-    if (key === 'budget') {
-      setErrors((err) => ({ ...err, budget: undefined, budgetAmount: undefined }));
-      // Move straight to the amount box when the visitor chooses to type their own budget.
-      if (value === CUSTOM_BUDGET) requestAnimationFrame(() => amountRef.current?.focus());
-    }
   };
 
   async function onSubmit(e) {
     e.preventDefault();
     const found = validateInquiry(values);
+    delete found.budget;
+    delete found.budgetAmount;
     setErrors(found);
+
     const first = ORDER.find((k) => found[k]);
     if (first) {
       const el = formRef.current?.elements.namedItem(first);
-      // Radio groups come back as a list: focus the first option.
       (el && 'focus' in el ? el : el?.[0])?.focus();
       return;
     }
@@ -68,7 +64,6 @@ export default function ContactForm() {
           name: values.name,
           email: values.email,
           service: values.service,
-          budget: budgetLabel(values),
           message: values.details,
         }),
       });
@@ -115,8 +110,6 @@ export default function ContactForm() {
     className: 'field',
   });
 
-  const custom = values.budget === CUSTOM_BUDGET;
-
   return (
     <form ref={formRef} onSubmit={onSubmit} noValidate className="panel is-static relative rounded-[28px] p-6 sm:p-9" aria-describedby="form-note">
       <div className="grid gap-6 sm:grid-cols-2">
@@ -151,61 +144,6 @@ export default function ContactForm() {
           </select>
           <FieldError k="service" errors={errors} />
         </div>
-
-        <fieldset className="sm:col-span-2" aria-describedby={errors.budget ? 'f-budget-error' : undefined}>
-          <legend className="mb-1 block text-sm font-medium text-ink">Budget</legend>
-          <p className="mb-3 text-sm text-steel">Pick a range, or enter your own figure in any currency.</p>
-          <div className="flex flex-wrap gap-2">
-            {BUDGET_CHOICES.map((o) => (
-              <label key={o} className="chip cursor-pointer">
-                <input type="radio" name="budget" value={o} checked={values.budget === o} onChange={update('budget')} className="sr-only" />
-                {o === CUSTOM_BUDGET ? (
-                  <>
-                    <Icon name="edit" className="h-4 w-4" />
-                    {o}
-                  </>
-                ) : (
-                  o
-                )}
-              </label>
-            ))}
-          </div>
-          <FieldError k="budget" errors={errors} />
-
-          {custom ? (
-            <div className="well mt-4 rounded-2xl p-4 sm:p-5">
-              <div className="grid gap-3 sm:grid-cols-[9rem_1fr]">
-                <div>
-                  <label htmlFor="f-budgetCurrency" className="mb-2 block text-sm font-medium text-ink">
-                    Currency
-                  </label>
-                  <select {...fieldProps('budgetCurrency')} className="field bg-surface">
-                    {CURRENCIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="f-budgetAmount" className="mb-2 block text-sm font-medium text-ink">
-                    Your budget for the whole project
-                  </label>
-                  <input
-                    {...fieldProps('budgetAmount')}
-                    ref={amountRef}
-                    className="field bg-surface"
-                    type="text"
-                    inputMode="decimal"
-                    autoComplete="off"
-                    placeholder={values.budgetCurrency === 'PKR' ? 'e.g. 250,000' : 'e.g. 2,500'}
-                  />
-                </div>
-              </div>
-              <FieldError k="budgetAmount" errors={errors} />
-            </div>
-          ) : null}
-        </fieldset>
 
         <div className="sm:col-span-2">
           <label htmlFor="f-details" className="mb-2 block text-sm font-medium text-ink">
